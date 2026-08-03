@@ -24,8 +24,7 @@ button { font: inherit; }
 .section-pad { padding: 8rem clamp(1.25rem, 5vw, 6.5rem); }
 .site-header { align-items: center; display: flex; gap: 2.5rem; justify-content: space-between; max-width: 1440px; margin: 0 auto; padding: 1.8rem clamp(1.25rem, 5vw, 6.5rem); position: relative; z-index: 10; }
 .brand { align-items: center; display: inline-flex; gap: .8rem; }
-.brand-mark { color: var(--blue-deep); display: inline-block; width: 2.1rem; }
-.brand-mark svg { fill: none; height: auto; stroke: currentColor; stroke-linecap: square; stroke-width: 2.3; width: 100%; }
+.brand-mark { color: var(--blue-deep); display: inline-block; font-family: var(--mono); font-size: 1.55rem; font-weight: 500; letter-spacing: -.28em; line-height: 1; width: 2.1rem; }
 .brand-copy { display: flex; flex-direction: column; font-family: var(--serif); font-size: 1.3rem; letter-spacing: .02em; line-height: .9; }
 .brand-copy small { color: var(--muted); font-family: var(--mono); font-size: .44rem; letter-spacing: .17em; margin-top: .38rem; text-transform: uppercase; }
 .main-nav { display: flex; gap: 2.15rem; margin-left: auto; }
