@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Juniper Digital Services is the software practice of Marc Lundgren — thoughtful engineering for useful digital products."
+    />
+    <title>Juniper Digital Services — Marc Lundgren</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="script.js" defer></script>
+  </head>
+
+  <body>
+    <div class="site-shell">
+      <header class="site-header" data-header>
+        <a class="brand" href="#top" aria-label="Juniper Digital Services home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 42 42" role="img">
+              <path d="M17 7 7 17l10 10" />
+              <path d="m25 7 10 10-10 10" />
+              <path d="m23 5-4 32" />
+            </svg>
+          </span>
+          <span class="brand-copy">
+            <span>juniper</span>
+            <small>digital services</small>
+          </span>
+        </a>
+
+        <nav class="main-nav" aria-label="Main navigation">
+          <a href="#services">Services</a>
+          <a href="#approach">Approach</a>
+          <a href="#about">About</a>
+        </nav>
+
+        <a class="header-cta" href="https://marclundgren.github.io/marclundgren.com/">
+          <span>Marc Lundgren</span>
+          <span aria-hidden="true">↗</span>
+        </a>
+
+        <button class="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
+          <span class="sr-only">Toggle navigation</span>
+          <span></span><span></span>
+        </button>
+
+        <div class="mobile-menu" id="mobile-menu" aria-hidden="true">
+          <a href="#services">Services</a>
+          <a href="#approach">Approach</a>
+          <a href="#about">About</a>
+          <a href="https://marclundgren.github.io/marclundgren.com/">Marc Lundgren <span aria-hidden="true">↗</span></a>
+        </div>
+      </header>
+
+      <main id="top">
+        <section class="hero section-pad">
+          <div class="hero-copy reveal">
+            <p class="eyebrow"><span class="eyebrow-dot"></span> Independent software development</p>
+            <h1>Thoughtful software for <em>real-world</em> work.</h1>
+            <p class="hero-intro">
+              Juniper Digital Services helps teams turn complicated ideas into calm, capable digital products.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-primary" href="#contact">Work with Juniper <span aria-hidden="true">↗</span></a>
+              <a class="text-link" href="#services">Explore services <span aria-hidden="true">↓</span></a>
+            </div>
+          </div>
+
+          <div class="hero-visual reveal reveal-delay" aria-label="Decorative software development illustration">
+            <div class="hero-orbit orbit-one"></div>
+            <div class="hero-orbit orbit-two"></div>
+            <div class="hero-grid"></div>
+            <div class="hero-terminal">
+              <div class="terminal-topbar">
+                <span class="window-dots"><i></i><i></i><i></i></span>
+                <span>juniper / build.log</span>
+                <span class="terminal-status">● live</span>
+              </div>
+              <div class="terminal-body">
+                <p><span class="code-muted">01</span> <span class="code-blue">const</span> <span class="code-white">goodWork</span> = {</p>
+                <p><span class="code-muted">02</span>&nbsp;&nbsp; <span class="code-blue">clarity</span>: <span class="code-orange">true</span>,</p>
+                <p><span class="code-muted">03</span>&nbsp;&nbsp; <span class="code-blue">craft</span>: <span class="code-orange">"built-in"</span>,</p>
+                <p><span class="code-muted">04</span>&nbsp;&nbsp; <span class="code-blue">people</span>: <span class="code-orange">"first"</span>,</p>
+                <p><span class="code-muted">05</span> };</p>
+                <p class="terminal-prompt"><span class="code-blue">$</span> ship --with-intention<span class="cursor"></span></p>
+              </div>
+            </div>
+            <div class="hero-caption"><span>01 / 03</span><span>From first sketch to final ship.</span></div>
+          </div>
+        </section>
+
+        <section class="signal-strip" aria-label="Juniper Digital Services specialties">
+          <div class="signal-label">A small practice with a wide lens</div>
+          <div class="signal-items">
+            <span>Product thinking</span><span class="signal-separator">✳</span>
+            <span>Full-stack development</span><span class="signal-separator">✳</span>
+            <span>Reliable systems</span>
+          </div>
+        </section>
+
+        <section class="services section-pad" id="services">
+          <div class="section-heading reveal">
+            <p class="eyebrow">What I do</p>
+            <h2>Good software starts with<br /><em>good questions.</em></h2>
+            <p class="section-intro">The best solution is rarely the loudest one. I bring product judgment and engineering discipline to every engagement.</p>
+          </div>
+
+          <div class="service-grid">
+            <article class="service-card reveal">
+              <div class="card-number">01</div>
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48"><path d="M8 12.5h32v23H8z" /><path d="M8 18h32M14 27h8M14 31h14" /></svg>
+              </div>
+              <h3>Product &amp; web apps</h3>
+              <p>From a sharp first release to a more capable version of what you already have.</p>
+              <a class="card-link" href="#contact">Learn more <span aria-hidden="true">↗</span></a>
+            </article>
+
+            <article class="service-card service-card-featured reveal reveal-delay-short">
+              <div class="card-number">02</div>
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48"><path d="m17 14-9 10 9 10M31 14l9 10-9 10M27 9l-6 30" /></svg>
+              </div>
+              <h3>Software engineering</h3>
+              <p>Clean, maintainable systems that make the next change easier than the last.</p>
+              <a class="card-link" href="#contact">Learn more <span aria-hidden="true">↗</span></a>
+            </article>
+
+            <article class="service-card reveal reveal-delay">
+              <div class="card-number">03</div>
+              <div class="service-icon" aria-hidden="true">
+                <svg viewBox="0 0 48 48"><path d="M24 8v32M8 24h32" /><circle cx="24" cy="24" r="15" /><path d="M17 17c4 4 10 10 14 14M31 17c-4 4-10 10-14 14" /></svg>
+              </div>
+              <h3>Systems &amp; strategy</h3>
+              <p>Practical technical direction for teams making important decisions under pressure.</p>
+              <a class="card-link" href="#contact">Learn more <span aria-hidden="true">↗</span></a>
+            </article>
+          </div>
+        </section>
+
+        <section class="approach section-pad" id="approach">
+          <div class="approach-layout">
+            <div class="approach-heading reveal">
+              <p class="eyebrow">The Juniper approach</p>
+              <h2>Less theater.<br /><em>More traction.</em></h2>
+            </div>
+            <div class="approach-body reveal reveal-delay-short">
+              <p class="large-copy">Software should create momentum, not become another thing to manage.</p>
+              <p>I work in the space between a blank page and a finished product: asking the questions that matter, making tradeoffs visible, and building with enough care that the work keeps paying off.</p>
+              <a class="button button-outline" href="#about">A little more about Juniper <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+
+          <div class="principles-grid">
+            <div class="principle reveal"><span>01</span><h3>Make it clear</h3><p>Complexity is a signal to look closer, not a badge of honor.</p></div>
+            <div class="principle reveal reveal-delay-short"><span>02</span><h3>Make it useful</h3><p>Every technical choice should connect back to a human outcome.</p></div>
+            <div class="principle reveal reveal-delay"><span>03</span><h3>Make it last</h3><p>Durable foundations give good ideas room to grow.</p></div>
+          </div>
+        </section>
+
+        <section class="about section-pad" id="about">
+          <div class="about-card reveal">
+            <div class="about-photo" aria-hidden="true">
+              <div class="about-initials">ML</div>
+              <span class="about-stamp">JDS / 2026</span>
+            </div>
+            <div class="about-copy">
+              <p class="eyebrow">The person behind the pixels</p>
+              <h2>Hi, I’m Marc.</h2>
+              <p>I’m a software developer and the founder of Juniper Digital Services, an independent practice built around useful technology and good collaboration.</p>
+              <p>I like working with people who care about the details but don’t lose sight of the bigger picture.</p>
+              <div class="about-meta"><span>Based in the Pacific Northwest</span><span>Working wherever the good work is</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="contact section-pad" id="contact">
+          <div class="contact-inner reveal">
+            <p class="eyebrow">Have a good problem?</p>
+            <h2>Let’s make something<br /><em>worth keeping.</em></h2>
+            <p>Tell me what you’re working on, what’s getting in the way, or where you’d like to go next.</p>
+            <a class="contact-email" href="mailto:hello@juniperdigitalservices.com">hello@juniperdigitalservices.com <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="contact-graphic" aria-hidden="true">
+            <span class="graphic-line line-a"></span><span class="graphic-line line-b"></span><span class="graphic-line line-c"></span>
+            <span class="graphic-spark">✳</span>
+          </div>
+        </section>
+      </main>
+
+      <footer class="site-footer">
+        <div class="footer-brand"><span class="footer-mark">✳</span><span>juniper digital services</span></div>
+        <p>© <span data-year></span> Marc Lundgren. Built with intention.</p>
+        <a href="https://marclundgren.github.io/marclundgren.com/">Personal site <span aria-hidden="true">↗</span></a>
+      </footer>
+    </div>
+  </body>
+</html>
