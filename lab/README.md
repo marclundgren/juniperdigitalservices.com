@@ -1,6 +1,6 @@
 # lab/ — parallel design experiments
 
-**Browse them at [`/lab/`](https://marclundgren.github.io/secondstreetweb.com/lab/)**, which links to every
+**Browse them at [`/lab/`](https://marclundgren.github.io/juniperdigitalservices.com/lab/)**, which links to every
 version with palette shortcuts. A `.nojekyll` file at the repo root keeps GitHub
 Pages from rendering this README as that directory's page.
 
