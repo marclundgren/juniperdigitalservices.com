@@ -295,16 +295,14 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
 
 .accent { color: var(--accent); }
 
-/* ---------- Awning stripe ---------- */
+/* ---------- Awning bar ----------
+   A solid brand-colour band, top and foot. Was a candy-stripe
+   repeating-gradient; dropped in favour of a plain bar. */
 .awning {
-  height: 7px;
-  background: repeating-linear-gradient(
-    90deg,
-    var(--accent) 0 22px,
-    var(--paper-2) 22px 44px
-  );
+  height: 6px;
+  background: var(--accent);
 }
-.awning-foot { height: 7px; }
+.awning-foot { height: 6px; }
 
 /* ---------- Buttons ---------- */
 .btn {
@@ -426,8 +424,10 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
 /* Storefront illustration (pure CSS — no stock photo) */
 .storefront { position: relative; max-width: 380px; width: 100%; justify-self: center; }
 .storefront-awning {
+  /* Solid canvas instead of a candy-stripe, with a soft vertical shade for
+     a little fabric depth. Scalloped hem (below) is unchanged. */
   height: 46px;
-  background: repeating-linear-gradient(90deg, var(--accent) 0 26px, var(--card) 26px 52px);
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-deep) 100%);
   border-radius: 6px 6px 0 0;
   -webkit-mask: radial-gradient(circle 9px at 50% 100%, transparent 9px, #000 9.5px) 0 0 / 18px 100% repeat-x;
   mask: radial-gradient(circle 9px at 50% 100%, transparent 9px, #000 9.5px) 0 0 / 18px 100% repeat-x;
