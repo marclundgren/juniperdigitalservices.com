@@ -663,6 +663,19 @@ a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset:
 .pill input:focus-visible + span { box-shadow: 0 0 0 3px var(--accent-soft); }
 .form-note { margin-top: 13px; font-size: 0.82rem; color: var(--ink-2); text-align: center; }
 
+/* ---------- Thank-you page ---------- */
+.thanks-hero { padding: 76px 0 96px; text-align: center; }
+.thanks-mark {
+  width: 56px; height: 56px; margin: 0 auto 26px;
+  display: grid; place-items: center;
+  background: var(--accent-soft); color: var(--accent-deep);
+  border-radius: 50%; font-size: 1.5rem; font-weight: 700;
+}
+.thanks-hero .wrap { max-width: 640px; }
+.thanks-hero h1 { font-size: clamp(2.1rem, 5.6vw, 3.4rem); }
+.thanks-hero .lede { margin: 0 auto; max-width: 42em; }
+.thanks-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 34px; }
+
 /* ---------- Footer ---------- */
 .site-footer { background: var(--band); color: var(--band-ink); padding-top: 56px; position: relative; }
 .footer-grid { display: grid; gap: 34px; padding-bottom: 40px; }

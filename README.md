@@ -92,6 +92,11 @@ top-level test; the two under `local/` are the Orange County test.
 | `local/index.html` | editorial layout, Orange County copy | — |
 | `local/centered/index.html` | centered layout, Orange County copy | — |
 
+Plus one shared utility page outside the A/B test: `thanks.html`, the
+post-submit landing page all four forms redirect to. It reuses the root
+`styles.css` / `fonts/` / `nav.js` / `theme.js` and is `noindex`ed since it
+carries no content worth ranking.
+
 Design assets live once and are shared: the editorial pages both link the root
 `styles.css` / `fonts/` / `nav.js`, and both centered pages link
 `centered/styles.css` / `centered/fonts/`. So a palette or spacing change flows
@@ -144,12 +149,11 @@ businesses" FAQ answer and the testimonial roles lose their regional framing.
       from: `New inquiry (editorial)`, `New inquiry (editorial, local)`,
       `Free site audit request (centered)`, and
       `Free site audit request (centered, local)`.
-- [ ] **Domain** — nothing is registered yet. The `redirect` hidden input in
-      each form is commented out and points at a `YOUR-DOMAIN` placeholder;
-      fill it in once a domain is settled. See "Naming" below.
-- [ ] **Thank-you page** (optional) — right now a submit lands on Web3Forms'
-      own success page, which is off-brand. Uncomment the `redirect` hidden
-      input in each form and point it at a `thanks.html` you control.
+- [x] **Domain** — `juniperdigitalservices.com` is registered and live (see
+      `CNAME`). See "Naming" below.
+- [x] **Thank-you page** — `thanks.html` at the site root replaces Web3Forms'
+      own success page. All four forms now carry a `redirect` hidden input
+      pointing at `https://juniperdigitalservices.com/thanks.html`.
 - [ ] **Testimonials** — all three quotes are placeholders and are labeled as
       such on the page. Replace with real quotes (with permission) or cut the
       section entirely. Don't ship the placeholders.
