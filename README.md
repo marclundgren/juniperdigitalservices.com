@@ -60,6 +60,7 @@ one drives the mobile menu.)
 | `index.html`, `styles.css` | yes |
 | `fonts/*.woff2` | yes — Fraunces + Karla, subset, self-hosted |
 | `nav.js` | yes — mobile menu toggle |
+| `ab.js` | yes — 50/50 A/B split + GA4 tagging |
 | `theme.js` | **no** — palette preview only, delete before launch |
 
 ## Before this goes live
@@ -88,7 +89,9 @@ one drives the mobile menu.)
 ## Parallel experiments
 
 `lab/` holds alternate directions that are deliberately kept off the main page —
-nothing at the repo root links to them. See `lab/README.md`. Currently:
+nothing at the repo root links to them, though `ab.js` now redirects half of all
+traffic into `lab/centered/` (see "A/B test" below). See `lab/README.md`.
+Currently:
 
 - `lab/centered/` → `/lab/centered/` — centered SaaS-marketing layout modelled on
   the reference site's shape, in four non-green palettes.
@@ -98,6 +101,63 @@ nothing at the repo root links to them. See `lab/README.md`. Currently:
 
 The region-free variants share this page's stylesheet and fonts, so design
 changes flow through to them — but **copy edits do not**. See `lab/README.md`.
+
+## A/B test
+
+`ab.js` splits traffic 50/50 between the two layouts and tags every GA4 hit with
+which one the visitor saw. GitHub Pages has no server-side routing, so the split
+happens in the browser: the script is the first thing in `<head>`, assigns a
+variant, stores it in a cookie, and redirects before anything paints.
+
+| Variant | Path |
+| --- | --- |
+| `editorial` | `/` |
+| `centered` | `/lab/centered/` |
+
+Both are set in the `VARIANTS` array at the top of `ab.js`.
+
+**To turn it on:**
+
+1. Create a GA4 property, then put its measurement ID in `GA_ID` in `ab.js`.
+   While it's still `G-XXXXXXXXXX` the script splits traffic but loads no
+   analytics at all, so nothing breaks before you're ready.
+2. In GA4 → Admin → Custom definitions, register two **event-scoped** custom
+   dimensions with parameter names `ab_variant` and `ab_test`. Without this the
+   variant is sent but never shows up in reports.
+3. Compare variants in Explore, or on any report, by breaking down
+   `generate_lead` events by `ab_variant`.
+
+**What gets measured.** Every page view carries `ab_variant` and `ab_test`, and
+`ab_variant` is also set as a user property so you can build audiences from it.
+Submitting either contact form fires a `generate_lead` event — that's the
+conversion to judge the test on. The two forms also already send different
+Web3Forms `subject` lines, so leads are attributable even outside GA.
+
+**Overrides**, for reviewing while the test is live:
+
+| URL | Effect |
+| --- | --- |
+| `?ab=editorial` | pin this browser to the editorial layout |
+| `?ab=centered` | pin this browser to the centered layout |
+| `?ab=off` | opt out of the test entirely |
+
+All three persist for 180 days in the `jds_ab` cookie. `/lab/` links to
+`?ab=off` so review sessions don't get bounced around.
+
+**SEO.** Crawlers are detected by user-agent and never bucketed or redirected,
+so each URL is indexed as requested. `/lab/centered/` traded its `noindex` for
+`<link rel="canonical">` pointing at the homepage, which is Google's documented
+handling for an A/B test served on a second URL — `noindex` would have thrown
+away the variant's signals instead of consolidating them.
+
+**Two things to decide before running this on real traffic:**
+
+- The variant B URL is literally `/lab/centered/`, which visitors see in the
+  address bar. Move that folder somewhere presentable (`/b/`, say) and update
+  `VARIANTS` — note `lab/centered-national/` links to `../centered/styles.css`
+  and would need repointing.
+- `theme.js` still renders the palette switcher on both pages. It's listed above
+  as delete-before-launch and this is the launch.
 
 ## GitHub Pages
 
