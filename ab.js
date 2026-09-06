@@ -28,10 +28,11 @@
 
    `?ab=` is accepted as an alias so links made before the /lab restructure
    still work. The pin is stored in localStorage under `jds_layout`, with a
-   cookie fallback for browsers where storage is blocked, so you can also set
-   or inspect it straight from devtools:
+   cookie fallback for browsers that block storage, so you can also set, read
+   or delete it straight from devtools:
 
      localStorage.setItem('jds_layout', 'centered')
+     localStorage.removeItem('jds_layout')
 */
 (function () {
   'use strict';
@@ -70,13 +71,30 @@
     return null;
   }
 
-  /* --- the pin: localStorage first, cookie as the fallback ---------------- */
+  /* --- the pin: localStorage, with a cookie fallback ----------------------- */
 
-  function readStore() {
+  // Probed with a real write rather than a read: a browser can hand back an
+  // empty localStorage and then throw on setItem, and treating that as "no pin
+  // yet" would re-roll the visitor on every page load.
+  function storageWorks() {
     try {
-      var v = localStorage.getItem(KEY);
-      if (v) return v;
-    } catch (e) {}
+      localStorage.setItem(KEY + '_probe', '1');
+      localStorage.removeItem(KEY + '_probe');
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  var STORAGE = storageWorks();
+
+  // When storage works it is the only source of truth. Reading through to the
+  // cookie whenever localStorage merely came back empty would resurrect a pin
+  // that someone had just deleted from devtools.
+  function readStore() {
+    if (STORAGE) {
+      try { return localStorage.getItem(KEY); } catch (e) {}
+    }
     var match = document.cookie.match('(?:^|; )' + KEY + '=([^;]*)');
     return match ? decodeURIComponent(match[1]) : null;
   }

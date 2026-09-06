@@ -7,13 +7,58 @@ Serve the folder — don't open the files directly, the split needs real paths:
 python3 -m http.server 8000
 ```
 
+Two entry points, each splitting 50/50 between the two layouts:
+
 | URL | |
 | --- | --- |
-| `/` | 50/50 editorial or centered, national copy |
-| `/local/` | 50/50 editorial or centered, Orange County copy |
+| `/` | editorial or centered, national copy |
+| `/local/` | editorial or centered, Orange County copy |
 
-Add `?layout=off` while reviewing, or you'll be bounced into a random layout.
-See "A/B test" below.
+## Viewing each variant
+
+Opening a variant's URL directly is not enough — `ab.js` will bounce you to
+whichever layout you're bucketed into. **Add `?layout=off` once**, and from then
+on every URL below opens exactly as requested, with no redirects, for as long as
+that browser keeps the setting:
+
+| Variant | Local | Live |
+| --- | --- | --- |
+| editorial · national | <http://localhost:8000/?layout=off> | <https://juniperdigitalservices.com/?layout=off> |
+| centered · national | <http://localhost:8000/centered/?layout=off> | <https://juniperdigitalservices.com/centered/?layout=off> |
+| editorial · Orange County | <http://localhost:8000/local/?layout=off> | <https://juniperdigitalservices.com/local/?layout=off> |
+| centered · Orange County | <http://localhost:8000/local/centered/?layout=off> | <https://juniperdigitalservices.com/local/centered/?layout=off> |
+
+`?layout=off` sticks, so you only need it on the first page you open — after
+that you can navigate between all four freely. To rejoin the test and get a
+fresh random assignment:
+
+```
+/?layout=clear
+```
+
+Two other ways in, depending on what you're doing:
+
+- **Send someone one specific layout** — `?layout=editorial` or
+  `?layout=centered` *pins* rather than opts out, so they'll be redirected to
+  that layout and stay on it everywhere, including if they later land on `/`
+  with no query string. Use this for "here's the version I want you to react
+  to"; use `?layout=off` for "let me flip through all four".
+- **From devtools**, on any page:
+
+  ```js
+  localStorage.setItem('jds_layout', 'off')        // see every URL as-is
+  localStorage.setItem('jds_layout', 'centered')   // or 'editorial' — pin one
+  localStorage.removeItem('jds_layout')            // rejoin the test
+  ```
+
+  In a browser that blocks storage the pin lives in a cookie instead, and only
+  `?layout=clear` will reset it — so prefer the URL when in doubt.
+
+While `theme.js` is still on the page, the switcher's "↗ Centered" /
+"↗ Editorial" link at the bottom jumps straight to the other layout on the same
+copy variant.
+
+See "A/B test" below for how the split and the pin actually work.
 
 ## Palette preview
 
@@ -194,14 +239,13 @@ For review, QA, or sending someone a specific version:
 | `?layout=clear` | forget the pin and re-roll on the next load |
 
 `?ab=` is accepted as an alias so links made before the `/lab` restructure still
-resolve. The pin lives in `localStorage` under `jds_layout`, with a cookie
-fallback (180 days) for browsers where storage is blocked, so you can also set or
-read it from devtools:
+resolve. See "Viewing each variant" at the top for which one to use when.
 
-```js
-localStorage.setItem('jds_layout', 'centered')   // or 'editorial', or 'off'
-localStorage.removeItem('jds_layout')            // re-roll
-```
+The pin lives in `localStorage` under `jds_layout`. Where storage is available
+it is the only source of truth, so deleting the key from devtools really does
+re-roll the visitor. Where the browser blocks storage outright, a cookie carries
+the pin instead (180 days) — `?layout=clear` clears both, which is why it's the
+reliable way to reset rather than deleting the key by hand.
 
 The pin is the layout only — it applies to whichever surface you visit, so a
 browser pinned to `centered` sees `/centered/` at the root and
