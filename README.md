@@ -1,15 +1,23 @@
-# Juniper Digital Services — homepage concept
+# Juniper Digital Services — homepage
 
-A single static homepage for review. No build step, no dependencies.
-Open `index.html` in a browser, or serve the folder:
+A static site running a 50/50 layout A/B test. No build step, no dependencies.
+Serve the folder — don't open the files directly, the split needs real paths:
 
 ```
 python3 -m http.server 8000
 ```
 
+| URL | |
+| --- | --- |
+| `/` | 50/50 editorial or centered, national copy |
+| `/local/` | 50/50 editorial or centered, Orange County copy |
+
+Add `?layout=off` while reviewing, or you'll be bounced into a random layout.
+See "A/B test" below.
+
 ## Palette preview
 
-Ten palettes are wired up. Append `?theme=<name>`, e.g. `index.html?theme=teal`.
+Ten palettes are wired up. Append `?theme=<name>`, e.g. `/?theme=teal&layout=off`.
 
 Each theme is named for the colour you'd call the site — the accent that
 carries the headline, buttons and awning — except `ink`, where the dark
@@ -55,21 +63,68 @@ one drives the mobile menu.)
 
 ## Files
 
+Four pages, two layouts × two copy variants. The two "national" pages are the
+top-level test; the two under `local/` are the Orange County test.
+
+| Path | What it is | Owns |
+| --- | --- | --- |
+| `index.html` | editorial layout, national copy | — |
+| `centered/index.html` | centered layout, national copy | `centered/styles.css`, `centered/theme.js`, `centered/fonts/` |
+| `local/index.html` | editorial layout, Orange County copy | — |
+| `local/centered/index.html` | centered layout, Orange County copy | — |
+
+Design assets live once and are shared: the editorial pages both link the root
+`styles.css` / `fonts/` / `nav.js`, and both centered pages link
+`centered/styles.css` / `centered/fonts/`. So a palette or spacing change flows
+to both copy variants of a layout automatically. **Copy edits do not propagate**
+— change a headline on `/` and you have to make the same edit in `/local/`.
+If the two start diverging in more than wording, stop and pick one.
+
+### The copy delta
+
+Everything that differs between `/local/` and `/`, and nothing else:
+
+| `/local/` (Orange County) | `/` (national) |
+| --- | --- |
+| Eyebrow "Orange County, California" | "Independent Web Developer" |
+| "for local small businesses" | "for small businesses" |
+| Storefront plaque "Est. Orange County" | "Est. 2026" |
+| City strip (Old Towne Orange, Fullerton, …) | Business types (retail, dental & medical, studios, trades, …) |
+| "We talk, in person if you'd like" | "We talk, on your schedule" |
+| "Twenty minutes at your counter or over the phone" | "Twenty minutes on a call — or at your counter, if you're close by" |
+| "I'm a freelance web developer in Orange County" | "I'm a freelance web developer" |
+| Testimonial roles with city names | Roles only |
+| "Happy to meet in person anywhere in the county" | "Happy to meet by video, phone, or in person" |
+| "the businesses that make this county run" | "the businesses that make main street run" |
+| Footer "Where / Orange County, California" | "Clients / Small businesses anywhere in the U.S." |
+
+The About section's "the block with the hardware store, the dentist, the taqueria
+that's been there thirty years" is kept deliberately — it reads as main-street
+positioning rather than a place, and it's what still ties the name to the pitch
+once the county is gone.
+
+The centered pair differs on the same axis: the badge drops to "Hand-Coded
+Websites for Small Businesses", and the hero subhead, the "what kind of
+businesses" FAQ answer and the testimonial roles lose their regional framing.
+
 | File | Ships? |
 | --- | --- |
-| `index.html`, `styles.css` | yes |
+| `styles.css`, `centered/styles.css` | yes |
 | `fonts/*.woff2` | yes — Fraunces + Karla, subset, self-hosted |
-| `nav.js` | yes — mobile menu toggle |
-| `ab.js` | yes — 50/50 A/B split + GA4 tagging |
-| `theme.js` | **no** — palette preview only, delete before launch |
+| `centered/fonts/*.woff2` | yes — Space Grotesk + JetBrains Mono, subset |
+| `nav.js` | yes — mobile menu toggle (editorial layout only) |
+| `ab.js` | yes — 50/50 layout split + GA4 tagging |
+| `theme.js`, `centered/theme.js` | **no** — palette preview only, delete before launch |
+
 
 ## Before this goes live
 
 - [x] **Web3Forms key** is wired into all four forms. Submissions post
       straight to Web3Forms and arrive at the address on that account. Each
       page sends a different `subject` so you can tell which one a lead came
-      from: `Juniper (home)`, `lab/national`, `lab/centered`,
-      `lab/centered-national`.
+      from: `New inquiry (editorial)`, `New inquiry (editorial, local)`,
+      `Free site audit request (centered)`, and
+      `Free site audit request (centered, local)`.
 - [ ] **Domain** — nothing is registered yet. The `redirect` hidden input in
       each form is commented out and points at a `YOUR-DOMAIN` placeholder;
       fill it in once a domain is settled. See "Naming" below.
@@ -86,35 +141,29 @@ one drives the mobile menu.)
 - [ ] **Service-area list** — the cities in the strip under the hero are a
       first guess. Swap in the ones you actually want to rank for.
 
-## Parallel experiments
-
-`lab/` holds alternate directions that are deliberately kept off the main page —
-nothing at the repo root links to them, though `ab.js` now redirects half of all
-traffic into `lab/centered/` (see "A/B test" below). See `lab/README.md`.
-Currently:
-
-- `lab/centered/` → `/lab/centered/` — centered SaaS-marketing layout modelled on
-  the reference site's shape, in four non-green palettes.
-- `lab/national/` → `/lab/national/` — this page with every geographic reference
-  removed, for marketing beyond one metro.
-- `lab/centered-national/` → `/lab/centered-national/` — same, for the centered layout.
-
-The region-free variants share this page's stylesheet and fonts, so design
-changes flow through to them — but **copy edits do not**. See `lab/README.md`.
-
 ## A/B test
 
-`ab.js` splits traffic 50/50 between the two layouts and tags every GA4 hit with
-which one the visitor saw. GitHub Pages has no server-side routing, so the split
-happens in the browser: the script is the first thing in `<head>`, assigns a
-variant, stores it in a cookie, and redirects before anything paints.
+`ab.js` splits traffic 50/50 between the two **layouts** and tags every GA4 hit
+with which one the visitor saw. GitHub Pages has no server-side routing, so the
+split happens in the browser: the script is the first thing in `<head>`, assigns
+a layout, stores it, and redirects before anything paints.
 
-| Variant | Path |
-| --- | --- |
-| `editorial` | `/` |
-| `centered` | `/lab/centered/` |
+There are two surfaces running the same layout test against different copy:
 
-Both are set in the `VARIANTS` array at the top of `ab.js`.
+| Surface | `ab_test` | editorial | centered |
+| --- | --- | --- | --- |
+| national | `layout-2026-09-home` | `/` | `/centered/` |
+| Orange County | `layout-2026-09-local` | `/local/` | `/local/centered/` |
+
+A visitor gets **one** layout assignment that follows them across both surfaces,
+so the split measures the layout rather than the route; `ab_test` still tells you
+which surface a hit came from. Both are set in the `SURFACES` array at the top of
+`ab.js`.
+
+**A known asymmetry.** The editorial variant is served directly at `/` and
+`/local/`; the centered variant costs one extra redirect. That's the price of not
+making the canonical homepage a redirect stub, but it does put a small latency
+handicap on one arm — worth remembering when a result is close.
 
 **To turn it on:**
 
@@ -129,35 +178,53 @@ Both are set in the `VARIANTS` array at the top of `ab.js`.
 
 **What gets measured.** Every page view carries `ab_variant` and `ab_test`, and
 `ab_variant` is also set as a user property so you can build audiences from it.
-Submitting either contact form fires a `generate_lead` event — that's the
-conversion to judge the test on. The two forms also already send different
-Web3Forms `subject` lines, so leads are attributable even outside GA.
+Submitting any contact form fires a `generate_lead` event — that's the conversion
+to judge the test on. The four forms also send different Web3Forms `subject`
+lines, so leads are attributable even outside GA.
 
-**Overrides**, for reviewing while the test is live:
+### Pinning a layout
+
+For review, QA, or sending someone a specific version:
 
 | URL | Effect |
 | --- | --- |
-| `?ab=editorial` | pin this browser to the editorial layout |
-| `?ab=centered` | pin this browser to the centered layout |
-| `?ab=off` | opt out of the test entirely |
+| `?layout=editorial` | pin this browser to the editorial layout |
+| `?layout=centered` | pin this browser to the centered layout |
+| `?layout=off` | opt out of the test entirely — stay on whatever URL you opened |
+| `?layout=clear` | forget the pin and re-roll on the next load |
 
-All three persist for 180 days in the `jds_ab` cookie. `/lab/` links to
-`?ab=off` so review sessions don't get bounced around.
+`?ab=` is accepted as an alias so links made before the `/lab` restructure still
+resolve. The pin lives in `localStorage` under `jds_layout`, with a cookie
+fallback (180 days) for browsers where storage is blocked, so you can also set or
+read it from devtools:
 
-**SEO.** Crawlers are detected by user-agent and never bucketed or redirected,
-so each URL is indexed as requested. `/lab/centered/` traded its `noindex` for
-`<link rel="canonical">` pointing at the homepage, which is Google's documented
-handling for an A/B test served on a second URL — `noindex` would have thrown
-away the variant's signals instead of consolidating them.
+```js
+localStorage.setItem('jds_layout', 'centered')   // or 'editorial', or 'off'
+localStorage.removeItem('jds_layout')            // re-roll
+```
 
-**Two things to decide before running this on real traffic:**
+The pin is the layout only — it applies to whichever surface you visit, so a
+browser pinned to `centered` sees `/centered/` at the root and
+`/local/centered/` under `/local/`.
 
-- The variant B URL is literally `/lab/centered/`, which visitors see in the
-  address bar. Move that folder somewhere presentable (`/b/`, say) and update
-  `VARIANTS` — note `lab/centered-national/` links to `../centered/styles.css`
-  and would need repointing.
-- `theme.js` still renders the palette switcher on both pages. It's listed above
-  as delete-before-launch and this is the launch.
+While the palette switcher is still on the page, its "↗ Centered" / "↗ Editorial"
+link jumps to the other layout on the same surface with the pin applied.
+
+**SEO.** Crawlers are detected by user-agent and never bucketed or redirected, so
+each URL is indexed as requested. `/` and `/local/` are self-canonical and meant
+to be indexed — `/local/` is a real Orange County landing page, not a test
+artifact. The two centered variants carry `<link rel="canonical">` at their
+editorial counterpart, which is Google's documented handling for an A/B test
+served on a second URL; `noindex` would have thrown away the variant's signals
+instead of consolidating them.
+
+**Before running this on real traffic:**
+
+- Nothing at `/` links to `/local/`, so it won't be discovered or indexed. Add a
+  link (or a sitemap entry) if you want the regional page to rank.
+- `theme.js` still renders the palette switcher on all four pages. It's listed
+  above as delete-before-launch and this is the launch.
+
 
 ## GitHub Pages
 
@@ -179,15 +246,15 @@ this is still reversible.
 
 Two things worth knowing before it isn't:
 
-- **The old name had a neighbour.** `lab/centered/` was modelled on
+- **The old name had a neighbour.** The centered layout was modelled on
   `secondstreetdigital.com`, a real agency. "Second Street Web" sat one word
   away from it. "Juniper" has no such collision.
 - **The name now implies a colour.** The palettes deliberately avoided green
   because the reference site was emerald. A brand called Juniper points straight
   at it, so `juniper` (evergreen on cool off-white) is the new default and
-  terracotta `clay` is one click away in the switcher. The `lab/centered/`
-  experiment now carries the same ten palettes, generated from the token sets
-  here so both layouts show identical colour — see `lab/README.md`.
+  terracotta `clay` is one click away in the switcher. The centered layout
+  carries the same ten palettes, generated from the token sets here so a colour
+  can be compared across layouts rather than guessed at — see `centered/README.md`.
 
 Domain is still open. `juniperdigitalservices.com` is a mouthful at 24
 characters; `juniperdigital.com` or `juniperweb.com` may be worth pricing first.

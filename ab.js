@@ -1,8 +1,18 @@
-/* 50/50 A/B split + GA4 tagging, for a static host with no server-side routing.
+/* 50/50 layout A/B split + GA4 tagging, for a static host with no server-side
+   routing.
+
+   Two surfaces, each testing the same two layouts against different copy:
+
+     /        editorial (national)  vs  /centered/         (national)
+     /local/  editorial (regional)  vs  /local/centered/   (regional)
+
+   A visitor gets ONE layout assignment that follows them across both surfaces,
+   so the split measures the layout and not the route. `ab_test` reports which
+   surface the hit came from, so you can still segment.
 
    Load it synchronously as the first element in <head>: the redirect has to
-   happen before the browser paints, or half your visitors see variant A flash
-   before landing on variant B.
+   happen before the browser paints, or half your visitors see one layout flash
+   before landing on the other.
 
    Setup:
      1. Put your GA4 measurement ID in GA_ID below.
@@ -10,31 +20,37 @@
         (Admin -> Custom definitions), scoped to Event, or they won't show up
         in reports.
 
-   Query overrides, for review and QA:
-     ?ab=editorial   force a variant
-     ?ab=centered
-     ?ab=off         opt out of the test entirely on this browser
+   Pinning a layout, for review and QA:
+     ?layout=editorial   pin this browser to the editorial layout
+     ?layout=centered    pin this browser to the centered layout
+     ?layout=off         opt out of the test entirely
+     ?layout=clear       forget the pin and re-roll on the next load
+
+   `?ab=` is accepted as an alias so links made before the /lab restructure
+   still work. The pin is stored in localStorage under `jds_layout`, with a
+   cookie fallback for browsers where storage is blocked, so you can also set
+   or inspect it straight from devtools:
+
+     localStorage.setItem('jds_layout', 'centered')
 */
 (function () {
   'use strict';
 
   var GA_ID   = 'G-XXXXXXXXXX';
-  var TEST_ID = 'layout-2026-09';
-  var COOKIE  = 'jds_ab';
+  var KEY     = 'jds_layout';
   var MAX_AGE = 60 * 60 * 24 * 180;
 
-  var VARIANTS = [
-    { id: 'editorial', path: '/' },
-    { id: 'centered',  path: '/lab/centered/' }
+  var LAYOUTS = ['editorial', 'centered'];
+
+  var SURFACES = [
+    { id: 'home',  paths: { editorial: '/',       centered: '/centered/' } },
+    { id: 'local', paths: { editorial: '/local/', centered: '/local/centered/' } }
   ];
 
   var CRAWLERS = /bot|crawl|slurp|spider|bingpreview|headlesschrome|lighthouse|pagespeed|gtmetrix/i;
 
-  function variantById(id) {
-    for (var i = 0; i < VARIANTS.length; i++) {
-      if (VARIANTS[i].id === id) return VARIANTS[i];
-    }
-    return null;
+  function isLayout(id) {
+    return LAYOUTS.indexOf(id) !== -1;
   }
 
   function normalize(path) {
@@ -42,34 +58,61 @@
     return path.charAt(path.length - 1) === '/' ? path : path + '/';
   }
 
-  function readCookie(name) {
-    var match = document.cookie.match('(?:^|; )' + name + '=([^;]*)');
+  // Matched against the variant paths themselves, not a prefix: a page that
+  // loads this script but isn't part of a test gets tagged and left alone.
+  function surfaceFor(path) {
+    for (var i = 0; i < SURFACES.length; i++) {
+      var paths = SURFACES[i].paths;
+      for (var j = 0; j < LAYOUTS.length; j++) {
+        if (normalize(paths[LAYOUTS[j]]) === path) return SURFACES[i];
+      }
+    }
+    return null;
+  }
+
+  /* --- the pin: localStorage first, cookie as the fallback ---------------- */
+
+  function readStore() {
+    try {
+      var v = localStorage.getItem(KEY);
+      if (v) return v;
+    } catch (e) {}
+    var match = document.cookie.match('(?:^|; )' + KEY + '=([^;]*)');
     return match ? decodeURIComponent(match[1]) : null;
   }
 
-  function writeCookie(name, value) {
-    document.cookie = name + '=' + encodeURIComponent(value) +
+  function writeStore(value) {
+    try { localStorage.setItem(KEY, value); } catch (e) {}
+    document.cookie = KEY + '=' + encodeURIComponent(value) +
       ';path=/;max-age=' + MAX_AGE + ';SameSite=Lax';
   }
 
+  function clearStore() {
+    try { localStorage.removeItem(KEY); } catch (e) {}
+    document.cookie = KEY + '=;path=/;max-age=0;SameSite=Lax';
+  }
+
   function assign() {
-    var override = new URLSearchParams(location.search).get('ab');
-    if (override === 'off') { writeCookie(COOKIE, 'off'); return 'off'; }
-    if (override && variantById(override)) { writeCookie(COOKIE, override); return override; }
+    var params   = new URLSearchParams(location.search);
+    var override = params.get('layout') || params.get('ab');
 
-    var stored = readCookie(COOKIE);
+    if (override === 'clear') clearStore();
+    else if (override === 'off') { writeStore('off'); return 'off'; }
+    else if (override && isLayout(override)) { writeStore(override); return override; }
+
+    var stored = readStore();
     if (stored === 'off') return 'off';
-    if (stored && variantById(stored)) return stored;
+    if (stored && isLayout(stored)) return stored;
 
-    // Crawlers stay unbucketed so each variant is indexed as it was requested.
+    // Crawlers stay unbucketed so each URL is indexed as it was requested.
     if (CRAWLERS.test(navigator.userAgent)) return null;
 
-    var picked = VARIANTS[Math.floor(Math.random() * VARIANTS.length)].id;
-    writeCookie(COOKIE, picked);
+    var picked = LAYOUTS[Math.floor(Math.random() * LAYOUTS.length)];
+    writeStore(picked);
     return picked;
   }
 
-  // A bad path in VARIANTS would otherwise bounce the visitor forever.
+  // A bad path in SURFACES would otherwise bounce the visitor forever.
   function hopsExceeded() {
     try {
       var hops = Number(sessionStorage.getItem('jds_ab_hops')) || 0;
@@ -83,14 +126,14 @@
     try { sessionStorage.removeItem('jds_ab_hops'); } catch (e) {}
   }
 
-  function startAnalytics(variant) {
+  function startAnalytics(variant, test) {
     if (GA_ID.indexOf('G-X') === 0) return;
 
     window.dataLayer = window.dataLayer || [];
     window.gtag = function () { window.dataLayer.push(arguments); };
 
     gtag('js', new Date());
-    gtag('set', { ab_variant: variant, ab_test: TEST_ID });
+    gtag('set', { ab_variant: variant, ab_test: test });
     gtag('set', 'user_properties', { ab_variant: variant });
     gtag('config', GA_ID);
 
@@ -100,20 +143,24 @@
     document.head.appendChild(tag);
   }
 
+  var here     = normalize(location.pathname);
+  var surface  = surfaceFor(here);
   var assigned = assign();
-  var target = assigned && assigned !== 'off' ? variantById(assigned) : null;
+  var target   = surface && assigned && assigned !== 'off' ? surface.paths[assigned] : null;
 
-  if (target && normalize(target.path) !== normalize(location.pathname)) {
+  if (target && normalize(target) !== here) {
     if (!hopsExceeded()) {
-      location.replace(target.path + location.search + location.hash);
+      location.replace(target + location.search + location.hash);
       return;
     }
   }
   clearHops();
 
   var reported = assigned || 'unbucketed';
+  var testId   = 'layout-2026-09-' + (surface ? surface.id : 'other');
+
   document.documentElement.setAttribute('data-ab', reported);
-  startAnalytics(reported);
+  startAnalytics(reported, testId);
 
   // The contact forms POST away to Web3Forms, so the event has to go out on
   // submit rather than on any response.
@@ -122,7 +169,7 @@
     if (!form || form.tagName !== 'FORM' || typeof window.gtag !== 'function') return;
     gtag('event', 'generate_lead', {
       ab_variant: reported,
-      ab_test: TEST_ID,
+      ab_test: testId,
       form_location: location.pathname
     });
   });
