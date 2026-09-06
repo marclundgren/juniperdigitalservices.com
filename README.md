@@ -56,10 +56,29 @@ pairs checked, all passing — the tightest are `--edge` on paper at 3.39:1 agai
 ΔE 27.6 from `teal`, the nearest existing accent, so it clears the ΔE 26 spacing
 floor and no two themes read as the same palette.
 
-There's also a pill switcher fixed at the bottom of the page. Pick a winner and
-delete `theme.js` plus the `.theme-switch` block in `index.html` — the palette
-you keep just becomes the `:root` block in `styles.css`. (`nav.js` stays — that
-one drives the mobile menu.)
+There's also a pill switcher fixed at the bottom of the page — a link to the
+other layout plus one button per palette. It's off for everyone by default and
+is built by `theme.js` only in review mode, so visitors never get it:
+
+| URL | Effect |
+| --- | --- |
+| `?review=1` | show the switcher in this browser, on every page (stored) |
+| `?review=0` | hide it again |
+
+The flag lives in `localStorage` under `jds-review`, so devtools works too:
+
+```js
+localStorage.setItem('jds-review', '1')
+localStorage.removeItem('jds-review')
+```
+
+Only the controls are gated. `?theme=<name>` and the stored palette still apply
+with the switcher hidden, so you can send someone a themed link without handing
+them the review UI.
+
+Pick a winner and delete `theme.js` plus its `<script>` tag — the palette you
+keep just becomes the `:root` block in `styles.css`. (`nav.js` stays — that one
+drives the mobile menu.)
 
 ## Files
 
@@ -114,7 +133,7 @@ businesses" FAQ answer and the testimonial roles lose their regional framing.
 | `centered/fonts/*.woff2` | yes — Space Grotesk + JetBrains Mono, subset |
 | `nav.js` | yes — mobile menu toggle (editorial layout only) |
 | `ab.js` | yes — 50/50 layout split + GA4 tagging |
-| `theme.js`, `centered/theme.js` | **no** — palette preview only, delete before launch |
+| `theme.js`, `centered/theme.js` | **no** — palette preview only, delete before launch. Renders nothing outside review mode (`?review=1`) |
 
 
 ## Before this goes live
@@ -207,8 +226,9 @@ The pin is the layout only — it applies to whichever surface you visit, so a
 browser pinned to `centered` sees `/centered/` at the root and
 `/local/centered/` under `/local/`.
 
-While the palette switcher is still on the page, its "↗ Centered" / "↗ Editorial"
-link jumps to the other layout on the same surface with the pin applied.
+In review mode (`?review=1`, see "Palette preview") the switcher's
+"↗ Centered" / "↗ Editorial" link jumps to the other layout on the same surface
+with the pin applied.
 
 **SEO.** Crawlers are detected by user-agent and never bucketed or redirected, so
 each URL is indexed as requested. `/` and `/local/` are self-canonical and meant
@@ -222,8 +242,9 @@ instead of consolidating them.
 
 - Nothing at `/` links to `/local/`, so it won't be discovered or indexed. Add a
   link (or a sitemap entry) if you want the regional page to rank.
-- `theme.js` still renders the palette switcher on all four pages. It's listed
-  above as delete-before-launch and this is the launch.
+- `theme.js` no longer shows anything to visitors — the switcher only builds in
+  review mode — but it's still shipped to all four pages and still listed above
+  as delete-before-launch. Drop it once a palette is chosen.
 
 
 ## GitHub Pages

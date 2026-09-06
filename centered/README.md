@@ -66,7 +66,8 @@ labels are the reference's device, the typefaces are not.
 **Notes**
 
 - The FAQ uses native `<details>`/`<summary>`, so it works with no JavaScript.
-  `theme.js` is the palette switcher only and gets deleted before launch.
+  `theme.js` is the palette switcher only, builds nothing outside review mode
+  (`?review=1`), and gets deleted before launch.
 - Both pages carry `<link rel="canonical">` at their editorial counterpart
   rather than `noindex`, so the variant's signals consolidate onto the page
   being tested against. See the root README's "A/B test" section.
