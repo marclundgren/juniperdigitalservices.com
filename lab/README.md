@@ -31,8 +31,12 @@ the main page and you have to make the same edit in `national/index.html`. If
 the two versions start diverging in more than wording, it's worth stopping and
 picking one.
 
-Both carry `noindex`, same as `centered/`, so nothing here competes with the
-real homepage in search.
+Both carry `noindex`, so nothing here competes with the real homepage in search.
+
+`centered/` is the exception: it's variant B of the live A/B test, so it carries
+`<link rel="canonical">` to the homepage instead of `noindex` — see the "A/B
+test" section of the root README. Add `?ab=off` before reviewing while the test
+is running, or you'll be redirected into a random variant.
 
 ---
 

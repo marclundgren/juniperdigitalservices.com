@@ -197,10 +197,16 @@
     </section>
 
     <p class="hub-note"><strong>This page is for review only.</strong> Everything under
-      <code>/lab/</code> is set to noindex so it never competes with the real homepage in
-      search. All four pages post to the same Web3Forms account, each with its own subject
-      line, so you can tell which one produced a lead. Delete this folder when you've picked
-      a direction.</p>
+      <code>/lab/</code> is noindex except <code>centered/</code>, which is live in the
+      50/50 A/B test and canonicals to the homepage instead. All four pages post to the
+      same Web3Forms account, each with its own subject line, so you can tell which one
+      produced a lead. Delete this folder when you've picked a direction.</p>
+
+    <p class="hub-note"><strong>Reviewing while the test is running?</strong>
+      <a href="../index.html?ab=off">Opt this browser out of the A/B redirect</a> first —
+      otherwise opening <code>/</code> or <code>/lab/centered/</code> drops you into a
+      random variant and bounces you between them. Opting out lasts 180 days. Use
+      <code>?ab=editorial</code> or <code>?ab=centered</code> to pin a specific side.</p>
   </div>
 </main>
 
